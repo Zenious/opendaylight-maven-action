@@ -6,7 +6,7 @@ function spawn_command(command, options) {
     const spawn_shell = spawn(command, options);
 
     spawn_shell.stdout.on("data", data => {
-        core.debug(`stdout: ${data}`);
+        console.log(`stdout: ${data}`);
     });
 
     spawn_shell.stderr.on("data", data => {
@@ -20,7 +20,7 @@ function spawn_command(command, options) {
     });
 
     spawn_shell.on("close", code => {
-        core.debug(`child process exited with code ${code}`);
+        console.log(`child process exited with code ${code}`);
     });
 
 }
