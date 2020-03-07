@@ -26,17 +26,18 @@ function spawn_command(command, options) {
 }
 
 // Copy opendaylight maven setting
+spawn_command("mkdir", ["-p", "~\/.m2\/"]);
 spawn_command("touch",[ "~\/.m2\/settings.xml"]);
 spawn_command("wget", ["-q", "-O", "~\/.m2\/settings.xml","https:\/\/raw.githubusercontent.com\/opendaylight\/odlparent\/master\/settings.xml"]);
 
 let options = ["clean", "install"];
 
 if (core.getInput("verbose").toLowerCase() == "false") {
-    options.push("--quiet ");
+    options.push("--quiet");
 }
 
 if (core.getInput("skipTests").toLowerCase() == "true") {
-    options.push("-DskipTests ");
+    options.push("-DskipTests");
 }
 
 spawn_command("mvn", options);
