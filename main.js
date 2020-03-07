@@ -1,7 +1,7 @@
 const { spawn } = require("child_process");
 const core = require('@actions/core');
 
-function spawn_command(command, options, path) {
+function spawn_command(command, options) {
 
     const spawn_shell = spawn(command, options);
 
@@ -26,6 +26,7 @@ function spawn_command(command, options, path) {
 }
 
 // Copy opendaylight maven setting
+spawn_command("touch",[ "~\/.m2\/settings.xml"]);
 spawn_command("wget", ["-q", "-O", "~\/.m2\/settings.xml","https:\/\/raw.githubusercontent.com\/opendaylight\/odlparent\/master\/settings.xml"]);
 
 let options = ["clean", "install"];
