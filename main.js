@@ -18,7 +18,7 @@ function exec_command(command) {
 }
 
 // Copy opendaylight maven setting
-exec_command("wget -q -O - https://raw.githubusercontent.com/opendaylight/odlparent/master/settings.xml > ~/.m2/settings.xml");
+exec_command("wget -q -O - https:\/\/raw.githubusercontent.com\/opendaylight\/odlparent\/master\/settings.xml > ~\/.m2\/settings.xml");
 
 let options = "";
 
