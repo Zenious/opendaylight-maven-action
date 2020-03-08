@@ -1,43 +1,49 @@
-const { spawn } = require("child_process");
-const core = require('@actions/core');
+const core = require("@actions/core");
+const exec = require("@actions/exec");
+const io = require("@actions/io");
 
-function spawn_command(command, options) {
+async function main() {
+  // Copy opendaylight maven setting
+  try {
+    await io.mkdirP(process.env.HOME + "/.m2");
+    await exec.exec("touch " + process.env.HOME + "/.m2/settings.xml");
+    await exec.exec(
+      "wget -q -O " +
+        process.env.HOME +
+        "/.m2/settings.xml https://raw.githubusercontent.com/opendaylight/odlparent/master/settings.xml"
+    );
+  } catch (e) {
+    core.error("" + e);
+    core.setFailed(`Action failed with error`);
+    return;
+  }
 
-    const spawn_shell = spawn(command, options);
+  let options = ["clean", "install"];
 
-    spawn_shell.stdout.on("data", data => {
-        console.log(`stdout: ${data}`);
-    });
-
-    spawn_shell.stderr.on("data", data => {
-        core.error(`stderr: ${data}`);
-        core.setFailed(`Action failed with error`);
-    });
-
-    spawn_shell.on('error', (error) => {
-        core.error(`error: ${error.message}`);
-        core.setFailed(`Action failed with error`);
-    });
-
-    spawn_shell.on("close", code => {
-        console.log(`child process exited with code ${code}`);
-    });
-
-}
-
-// Copy opendaylight maven setting
-spawn_command("mkdir", ["-p", "~\/.m2\/"]);
-spawn_command("touch",[ "~\/.m2\/settings.xml"]);
-spawn_command("wget", ["-q", "-O", "~\/.m2\/settings.xml","https:\/\/raw.githubusercontent.com\/opendaylight\/odlparent\/master\/settings.xml"]);
-
-let options = ["clean", "install"];
-
-if (core.getInput("verbose").toLowerCase() == "false") {
+  const exec_options = {};
+  exec_options.listeners = {
+    stdout: data => {
+      core.info(""+data);
+    },
+    stderr: data => {
+      core.error(""+data);
+    }
+  };
+  
+  if (core.getInput("verbose").toLowerCase() == "false") {
     options.push("--quiet");
-}
+  }
 
-if (core.getInput("skipTests").toLowerCase() == "true") {
+  if (core.getInput("skipTests").toLowerCase() == "true") {
     options.push("-DskipTests");
+  }
+  try {
+    await exec.exec("mvn " + options.join(" "), null, exec_options);
+  } catch (e) {
+    core.error("" + e);
+    core.setFailed(`Action failed with error`);
+    return;
+  }
 }
 
-spawn_command("mvn", options);
+main();
