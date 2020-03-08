@@ -22,14 +22,14 @@ async function main() {
 
   const exec_options = {};
   exec_options.listeners = {
-    stdout: data => {
-      core.info(""+data);
+    stdline: data => {
+      core.info(data);
     },
-    stderr: data => {
-      core.error(""+data);
+    errline: data => {
+      core.error(data);
     }
   };
-  
+
   if (core.getInput("verbose").toLowerCase() == "false") {
     options.push("--quiet");
   }
